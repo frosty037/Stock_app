@@ -1,41 +1,41 @@
 import yfinance as yf
 import streamlit as st
 import plotly.graph_objects as go
-import json
-import os
 
 st.title("Hisse Fiyat Sorgulama")
 
-# JSON'dan oku
-def load_lots():
-    if os.path.exists("lots.json"):
-        with open("lots.json", "r") as f:
-            return json.load(f)
-    return ["LOGO", "ASELS"]  # dosya yoksa varsayılan
-
-# JSON'a kaydet
-def save_lots(lots):
-    with open("lots.json", "w") as f:
-        json.dump(lots, f)
-
-# session_state başlat
-if "lots" not in st.session_state:
-    st.session_state.lots = load_lots()
-# session_state başlat
 if "lots" not in st.session_state:
     st.session_state.lots = ["LOGO", "ASELS"]
 
+# Önce verileri topla
+hisse_listesi = []
+
 for lot in st.session_state.lots:
-    veri = yf.Ticker(f"{lot}.IS").history(period="1mo")
+    veri = yf.Ticker(f"{lot}.IS").history(period="1d")
     if not veri.empty:
-        fiyat = round(veri["Close"].iloc[-1], 2)
-        st.write(f"{lot}: {fiyat} TL")
-        min_fiyat = veri["Close"].min()
-        max_fiyat = veri["Close"].max()
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=veri.index, y=veri["Close"], mode="lines", name=lot))
-        fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
-        st.plotly_chart(fig)
+        baslangic = veri["Close"].iloc[0]
+        son = veri["Close"].iloc[-1]
+        yuzde = round((son - baslangic) / baslangic * 100, 2)
+        hisse_listesi.append({
+            "ad": lot,
+            "fiyat": round(son, 2),
+            "yuzde": yuzde,
+            "veri": veri
+        })
+
+# Sırala
+hisse_listesi.sort(key=lambda x: x["yuzde"], reverse=True)
+
+# Göster
+for hisse in hisse_listesi:
+    renk = "🟢" if hisse["yuzde"] >= 0 else "🔴"
+    st.write(f"{renk} {hisse['ad']}: {hisse['fiyat']} TL  |  %{hisse['yuzde']}")
+    min_fiyat = hisse["veri"]["Close"].min()
+    max_fiyat = hisse["veri"]["Close"].max()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=hisse["veri"].index, y=hisse["veri"]["Close"], mode="lines", name=hisse["ad"]))
+    fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
+    st.plotly_chart(fig)
 
 st.divider()
 
@@ -48,13 +48,16 @@ if stock_name:
     if gecmis.empty:
         st.error("Hisse bulunamadı!")
     else:
-        price = round(gecmis["Close"].iloc[-1], 2)
-        st.success(f"{stock_name}: {round(price, 2)} TL")
+        baslangic = gecmis["Close"].iloc[0]
+        son = gecmis["Close"].iloc[-1]
+        yuzde = round((son - baslangic) / baslangic * 100, 2)
+        renk = "🟢" if yuzde >= 0 else "🔴"
 
-        if st.button("Listeye Ekle"):
-            hisse = stock_name.replace(".IS", "")
-            if hisse not in st.session_state.lots:
-                st.session_state.lots.append(hisse)
-                st.success(f"{hisse} listeye eklendi!")
-            else:
-                st.warning("Zaten listede var!")
+        st.write(f"{renk} {stock_name}: {round(son, 2)} TL  |  %{yuzde}")
+
+        min_fiyat = gecmis["Close"].min()
+        max_fiyat = gecmis["Close"].max()
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=gecmis.index, y=gecmis["Close"], mode="lines", name=stock_name))
+        fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
+        st.plotly_chart(fig)
