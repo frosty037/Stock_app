@@ -9,7 +9,7 @@ lots = ["LOGO", "ASELS"]
 for lot in lots:
     veri = yf.Ticker(f"{lot}.IS").history(period="1d")
     if not veri.empty:
-        veri = yf.Ticker(f"{lot}.IS").history(period="1mo", interval="1m")
+        veri = yf.Ticker(f"{lot}.IS").history(period="1d", interval="1m")
         fiyat = round(veri["Close"].iloc[-1], 2)
 
         st.line_chart(veri["Close"])
