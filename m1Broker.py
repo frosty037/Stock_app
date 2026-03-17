@@ -17,7 +17,6 @@ def goster(ad, veri):
     min_fiyat = veri["Close"].min()
     max_fiyat = veri["Close"].max()
 
-    tarihler = veri.index.strftime("%Y-%m")
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=tarihler, y=veri["Close"], mode="lines", name=ad))
@@ -29,7 +28,7 @@ def goster(ad, veri):
 hisse_listesi = []
 
 for lot in st.session_state.lots:
-    veri = yf.Ticker(f"{lot}.IS").history(period="2d")
+    veri = yf.Ticker(f"{lot}.IS").history(period="1d", interval="1m")
     if not veri.empty:
         baslangic = veri["Close"].iloc[0]
         son = veri["Close"].iloc[-1]
@@ -48,7 +47,7 @@ stock_name = st.text_input("Hisse adı gir:").strip().upper()
 if stock_name:
     stock_name += ".IS"
     share = yf.Ticker(stock_name)
-    gecmis = share.history(period="1mo")
+    gecmis = share.history(period="1d", interval="1m")
     if gecmis.empty:
         st.error("Hisse bulunamadı!")
     else:
