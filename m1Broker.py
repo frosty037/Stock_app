@@ -1,9 +1,26 @@
 import yfinance as yf
 import streamlit as st
 import plotly.graph_objects as go
+import json
+import os
 
 st.title("Hisse Fiyat Sorgulama")
 
+# JSON'dan oku
+def load_lots():
+    if os.path.exists("lots.json"):
+        with open("lots.json", "r") as f:
+            return json.load(f)
+    return ["LOGO", "ASELS"]  # dosya yoksa varsayılan
+
+# JSON'a kaydet
+def save_lots(lots):
+    with open("lots.json", "w") as f:
+        json.dump(lots, f)
+
+# session_state başlat
+if "lots" not in st.session_state:
+    st.session_state.lots = load_lots()
 # session_state başlat
 if "lots" not in st.session_state:
     st.session_state.lots = ["LOGO", "ASELS"]
