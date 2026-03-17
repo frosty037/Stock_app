@@ -12,12 +12,12 @@ for lot in lots:
         fiyat = round(veri["Close"].iloc[-1], 2)
         st.write(f"{lot}: {fiyat} TL")
 
-        min_fiyat = veri["Close"].min() - 5
-        max_fiyat = veri["Close"].max() + 5
+        min_fiyat = veri["Close"].min()
+        max_fiyat = veri["Close"].max()
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=veri.index, y=veri["Close"], mode="lines", name=lot))
-        fig.update_layout(yaxis=dict(range=[min_fiyat, max_fiyat]))
+        fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
 
         st.plotly_chart(fig)
 
@@ -34,24 +34,3 @@ if stock_name:
     else:
         price = round(gecmis["Close"].iloc[-1], 2)
         st.success(f"{stock_name}: {round(price, 2)} TL")
-```
-
----
-
-**Ne eklendi:**
-
-| Kod | Ne yapıyor |
-|-----|-----------|
-| `veri["Close"].min() - 5` | En düşük fiyattan 5 çıkar |
-| `veri["Close"].max() + 5` | En yüksek fiyata 5 ekle |
-| `go.Figure()` | Plotly grafiği oluştur |
-| `yaxis=dict(range=[...])` | Y eksenini ayarla |
-| `st.plotly_chart(fig)` | Grafiği göster |
-
----
-
-`requirements.txt` dosyasına `plotly` eklemeyi unutma:
-```
-streamlit
-yfinance
-plotly
