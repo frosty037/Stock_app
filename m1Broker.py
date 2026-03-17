@@ -4,21 +4,20 @@ import plotly.graph_objects as go
 
 st.title("Hisse Fiyat Sorgulama")
 
-lots = ["LOGO", "ASELS"]
+# session_state başlat
+if "lots" not in st.session_state:
+    st.session_state.lots = ["LOGO", "ASELS"]
 
-for lot in lots:
+for lot in st.session_state.lots:
     veri = yf.Ticker(f"{lot}.IS").history(period="1mo")
     if not veri.empty:
         fiyat = round(veri["Close"].iloc[-1], 2)
         st.write(f"{lot}: {fiyat} TL")
-
         min_fiyat = veri["Close"].min()
         max_fiyat = veri["Close"].max()
-
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=veri.index, y=veri["Close"], mode="lines", name=lot))
         fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
-
         st.plotly_chart(fig)
 
 st.divider()
@@ -34,6 +33,11 @@ if stock_name:
     else:
         price = round(gecmis["Close"].iloc[-1], 2)
         st.success(f"{stock_name}: {round(price, 2)} TL")
-        yesnoadd = st.text_input("Veritabanına eklemek ister misiniz? (Evet/Hayır):")
-        if yesnoadd == "Evet":
-            lots.append(stock_name)
+
+        if st.button("Listeye Ekle"):
+            hisse = stock_name.replace(".IS", "")
+            if hisse not in st.session_state.lots:
+                st.session_state.lots.append(hisse)
+                st.success(f"{hisse} listeye eklendi!")
+            else:
+                st.warning("Zaten listede var!")
