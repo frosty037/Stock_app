@@ -19,7 +19,12 @@ def goster(ad, veri):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=list(range(len(veri))),
+        fig.add_trace(go.Scatter(
+        x=veri.index.astype(str),
+        y=veri["Close"].values,
+        mode="lines",
+        name=ad
+    ))
         y=veri["Close"].values,
         mode="lines",
         name=ad
