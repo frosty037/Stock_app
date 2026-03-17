@@ -29,7 +29,7 @@ def goster(ad, veri):
 hisse_listesi = []
 
 for lot in st.session_state.lots:
-    veri = yf.Ticker(f"{lot}.IS").history(period="1mo")
+    veri = yf.Ticker(f"{lot}.IS").history(period="1d")
     if not veri.empty:
         baslangic = veri["Close"].iloc[0]
         son = veri["Close"].iloc[-1]
