@@ -34,3 +34,6 @@ if stock_name:
     else:
         price = round(gecmis["Close"].iloc[-1], 2)
         st.success(f"{stock_name}: {round(price, 2)} TL")
+        yesnoadd = st.text_input("Veritabanına eklemek ister misiniz? (Evet/Hayır):")
+        if yesnoadd == "Evet":
+            lots.append(stock_name)
