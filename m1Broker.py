@@ -17,7 +17,7 @@ def goster(ad, veri):
     min_fiyat = veri["Close"].min()
     max_fiyat = veri["Close"].max()
 
-    tarihler = veri.index.strftime("%Y-%m-%d")
+    tarihler = veri.index.strftime("%Y-%m")
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=tarihler, y=veri["Close"], mode="lines", name=ad))
