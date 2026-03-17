@@ -17,18 +17,20 @@ def goster(ad, veri):
     min_fiyat = veri["Close"].min()
     max_fiyat = veri["Close"].max()
 
-
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=tarihler, y=veri["Close"], mode="lines", name=ad))
+    fig.add_trace(go.Scatter(
+        x=list(range(len(veri))),
+        y=veri["Close"].values,
+        mode="lines",
+        name=ad
+    ))
     fig.update_layout(yaxis=dict(range=[min_fiyat-5, max_fiyat+5]))
     st.plotly_chart(fig)
-
-    return yuzde, round(son, 2)
 
 hisse_listesi = []
 
 for lot in st.session_state.lots:
-    veri = yf.Ticker(f"{lot}.IS").history(period="1d", interval="1m")
+    veri = yf.Ticker(f"{lot}.IS").history(period="5d")
     if not veri.empty:
         baslangic = veri["Close"].iloc[0]
         son = veri["Close"].iloc[-1]
@@ -47,7 +49,7 @@ stock_name = st.text_input("Hisse adı gir:").strip().upper()
 if stock_name:
     stock_name += ".IS"
     share = yf.Ticker(stock_name)
-    gecmis = share.history(period="1d", interval="1m")
+    gecmis = share.history(period="5d")
     if gecmis.empty:
         st.error("Hisse bulunamadı!")
     else:
