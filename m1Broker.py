@@ -18,8 +18,7 @@ def goster(ad, veri):
     max_fiyat = veri["Close"].max()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        fig.add_trace(go.Scatter(
+        fig.add_trace(go.Scatter(,
         x=veri.index.astype(str),
         y=veri["Close"].values,
         mode="lines",
